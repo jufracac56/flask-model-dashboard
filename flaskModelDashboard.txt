@@ -1,0 +1,9 @@
+flask_model_dashboard/
+│
+├── app.py                 # El archivo principal de la aplicación Flask.
+├── model.pkl              # El modelo entrenado que se carga en Flask.
+├── metrics.json           # El archivo donde se guardan las métricas del modelo.
+├── templates/
+│   ├── dashboard.html     # El archivo HTML para mostrar el dashboard con Chart.js.
+├── requirements.txt       # Dependencias necesarias para ejecutar el proyecto.
+└── README.md              # Instrucciones y descripción del proyecto.

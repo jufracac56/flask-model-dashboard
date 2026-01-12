@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Definición del juego de caracteres para el documento -->
+    <meta charset="UTF-8">
+    <!-- Hacer que la página sea responsiva, ajustando su tamaño según la pantalla del dispositivo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título de la página -->
+    <title>ML Metrics Dashboard - Production</title>
+    
+    <!-- Cargar la librería Chart.js desde CDN para generar gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Cargar el plugin Chart.js DataLabels para mostrar los valores dentro de las barras -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">🤖 Machine Learning Model Metrics Dashboard</h1>
+        
+        <div class="main-layout">
+            <!-- Sidebar Izquierdo: Performance by Class -->
+            <div class="left-sidebar">
+                <div class="class-metrics-section">
+                    <div class="section-title">🏷️ Performance by Class</div>
+                    <div class="class-cards-container" id="classCardsContainer">
+                        <!-- Las tarjetas se generarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenido Central: Gráficos principales y matriz -->
+            <div class="center-content">
+                <div class="charts-grid">
+                    <!-- Gráfico Radar para vista general -->
+                    <div class="chart-container">
+                        <div class="chart-title">📊 Overall Model Performance</div>
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    
+                    <!-- Gráfico de barras original -->
+                    <div class="chart-container">
+                        <div class="chart-title">📈 Metrics Comparison</div>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Matriz de Confusión -->
+                <div class="confusion-matrix-section">
+                    <div class="chart-title">🔥 Confusion Matrix</div>
+                    <div class="confusion-matrix-container">
+                        <table id="confusionTable" class="confusion-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Predicted Setosa</th>
+                                    <th>Predicted Versicolor</th>
+                                    <th>Predicted Virginica</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Actual Setosa</strong></td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actual Versicolor</strong></td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actual Virginica</strong></td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                    <td class="confusion-cell" data-value="0">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Derecho: Métricas generales (Gauges) -->
+            <div class="right-sidebar">
+                <div class="gauge-container">
+                    <div class="chart-title">🎯 Accuracy</div>
+                    <canvas id="accuracyGauge"></canvas>
+                </div>
+                <div class="gauge-container">
+                    <div class="chart-title">⚖️ F1 Score</div>
+                    <canvas id="f1Gauge"></canvas>
+                </div>
+                <div class="gauge-container">
+                    <div class="chart-title">🔍 Precision</div>
+                    <canvas id="precisionGauge"></canvas>
+                </div>
+                <div class="gauge-container">
+                    <div class="chart-title">📡 Recall</div>
+                    <canvas id="recallGauge"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

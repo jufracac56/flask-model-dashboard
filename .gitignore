@@ -1,0 +1,21 @@
+# Entornos virtuales
+venv/
+env/
+dashboard/
+lib/
+lib64/
+site-packages/
+
+# Flask
+instance/
+
+# Python
+__pycache__/
+*.pyc
+
+# Variables
+.env
+
+# Modelos entrenados
+*.pkl
+*.joblib
