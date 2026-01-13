@@ -12,7 +12,7 @@ Una aplicación web completa para entrenar, evaluar y visualizar modelos de Mach
 - 🤖 **Entrenamiento automatizado** de modelo de regresión logística
 - 📊 **Dashboard interactivo** con visualizaciones en tiempo real
 - 🔄 **API RESTful** completa para operaciones CRUD
-- 📈 **Múltiples métricas** de evaluación (Accuracy, Precision, Recall, F1-Score)
+- 📈 **Múltiples métricas** de evaluación (Accuracy, Precision, Recall, F1-Score, Matriz fr confusión y clasification report)
 - 🎯 **Matriz de confusión** visual e interactiva
 - 📱 **Diseño responsivo** y moderno
 - 💾 **Almacenamiento persistente** con SQLite
