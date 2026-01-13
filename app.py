@@ -169,46 +169,10 @@ def get_metrics():
         # Cualquier otro error
         return jsonify({'error': 'Error loading metrics', 'message': str(e)}), 500
 
-
-
-
-# @app.route('/metrics', methods=['GET'])
-# def get_metrics():
-#     try:
-#         # Intenta leer las métricas desde un archivo JSON.
-#         with open('metrics.json', 'r') as f:
-#             metrics = json.load(f)  # Carga el archivo JSON que contiene las métricas.
-
-#         # Asume que el archivo JSON tiene las métricas necesarias como 'accuracy', 'f1_score', 'precision', 'recall'.
-#         labels = ['Accuracy', 'F1 Score', 'Precision', 'Recall']  # Etiquetas para el gráfico.
-#         data = [
-#             metrics['accuracy'],
-#             metrics['f1_score'],
-#             metrics['precision'],
-#             metrics['recall']
-#         ]  # Los valores de las métricas.
-
-#         return jsonify({'labels': labels, 'data': data}), 200  # Retorna las métricas en formato JSON.
-
-#     except FileNotFoundError:
-#         # Si el archivo metrics.json no se encuentra, retorna un error.
-#         return jsonify({'error': 'Metrics file not found'}), 404
-
 # Ruta para mostrar el dashboard con las métricas.
 @app.route('/dashboard')
 def dashboard():
-    try:
-        # Aquí puedes llamar a la ruta /metrics para obtener las métricas directamente.
-        metrics = {
-            "labels": ["Accuracy", "Precision", "Recall", "F1 Score"],
-            "data": [0.9, 0.921, 0.9, 0.896]
-        }
-        # Retorna la plantilla HTML (dashboard.html) y pasa las métricas como contexto.
-        return render_template('dashboard.html', metrics=metrics)
-    
-    except Exception as e:
-        # Si ocurre algún error al cargar el dashboard, responde con un mensaje de error.
-        return jsonify({'error': 'Error al cargar el dashboard', 'message': str(e)}), 500
+    return render_template('dashboard.html')
 
 # Ejecutar la aplicación Flask.
 if __name__ == '__main__':
