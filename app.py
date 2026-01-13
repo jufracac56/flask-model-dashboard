@@ -31,94 +31,102 @@ with app.app_context():
 # Ruta para realizar predicciones (POST).
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Esta ruta recibe datos JSON a través de una solicitud POST para realizar una predicción.
-    data = request.json  # Obtiene los datos JSON enviados en la solicitud.
-    
-    # Prepara las características (features) que el modelo necesita para hacer una predicción.
-    features = [[
-        data['sepal_length'],
-        data['sepal_width'],
-        data['petal_length'],
-        data['petal_width']
-    ]]
-    
-    # Realiza la predicción usando el modelo previamente cargado.
-    prediction = model.predict(features)[0]  # Predicción basada en las características.
+    data = request.json
+    # Validación de campos obligatorios
+    required_fields = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing field: {field}'}), 400
 
-    # Guarda la predicción en la base de datos para poder consultarla más tarde.
+    # Validación de tipos numéricos
+    try:
+        features = [[
+            float(data['sepal_length']),
+            float(data['sepal_width']),
+            float(data['petal_length']),
+            float(data['petal_width'])
+        ]]
+    except ValueError:
+        return jsonify({'error': 'All fields must be numeric'}), 400
+
+    prediction = model.predict(features)[0]
+
     new_prediction = Prediction(
         sepal_length=data['sepal_length'],
         sepal_width=data['sepal_width'],
         petal_length=data['petal_length'],
         petal_width=data['petal_width'],
-        predicted_class=prediction  # Guarda la clase predicha en la base de datos.
+        predicted_class=prediction
     )
-    db.session.add(new_prediction)  # Agrega la predicción a la sesión de la base de datos.
-    db.session.commit()  # Confirma los cambios en la base de datos.
-
-    # Retorna la predicción como respuesta JSON.
+    db.session.add(new_prediction)
+    db.session.commit()
     return jsonify({'prediction': prediction})
 
 # Ruta para obtener todas las predicciones realizadas (GET).
 @app.route('/predictions', methods=['GET'])
 def get_predictions():
-    # Esta ruta obtiene todas las predicciones almacenadas en la base de datos.
-    predictions = Prediction.query.all()  # Obtiene todas las predicciones de la base de datos.
-    
-    # Prepara los datos de las predicciones para ser retornados como JSON.
-    result = [{'id': pred.id, 'sepal_length': pred.sepal_length, 'sepal_width': pred.sepal_width,
-               'petal_length': pred.petal_length, 'petal_width': pred.petal_width, 'predicted_class': pred.predicted_class}
-              for pred in predictions]  # Convierte las predicciones a un formato de lista de diccionarios.
-
-    return jsonify(result)  # Retorna las predicciones en formato JSON.
+    # Límite por parámetro GET
+    limit = request.args.get('limit', default=10, type=int)
+    MAX_LIMIT = 100
+    if limit > MAX_LIMIT:
+        limit = MAX_LIMIT
+    query = Prediction.query
+    predictions = query.limit(limit).all()
+    result = [{
+        'id': pred.id,
+        'sepal_length': pred.sepal_length,
+        'sepal_width': pred.sepal_width,
+        'petal_length': pred.petal_length,
+        'petal_width': pred.petal_width,
+        'predicted_class': pred.predicted_class
+    } for pred in predictions]
+    return jsonify({
+        'count': len(result),
+        'limit': limit,
+        'data': result
+    })
 
 # Ruta para actualizar una predicción existente (PUT).
 @app.route('/prediction/<int:id>', methods=['PUT'])
 def update_prediction(id):
-    # Esta ruta actualiza una predicción existente en la base de datos.
-    data = request.json  # Obtiene los datos JSON enviados en la solicitud.
-    
-    # Busca la predicción en la base de datos usando el ID proporcionado en la URL.
-    prediction = Prediction.query.get(id)  # Busca la predicción por su ID.
-    
+    data = request.json
+    required_fields = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing field: {field}'}), 400
+        if not isinstance(data[field], (float, int)):
+            return jsonify({'error': f'Invalid type for {field}: must be a number'}), 400
+    prediction = Prediction.query.get(id)
     if not prediction:
-        # Si no se encuentra la predicción, devuelve un mensaje de error.
         return jsonify({'message': 'Prediction not found'}), 404
-
-    # Actualiza los campos de la predicción con los nuevos valores proporcionados (si existen).
     prediction.sepal_length = data.get('sepal_length', prediction.sepal_length)
     prediction.sepal_width = data.get('sepal_width', prediction.sepal_width)
     prediction.petal_length = data.get('petal_length', prediction.petal_length)
     prediction.petal_width = data.get('petal_width', prediction.petal_width)
-
-    # Realiza la predicción nuevamente con las características actualizadas.
     features = [[
         prediction.sepal_length,
         prediction.sepal_width,
         prediction.petal_length,
         prediction.petal_width
     ]]
-    prediction.predicted_class = model.predict(features)[0]  # Actualiza la clase predicha.
-
-    # Guarda los cambios en la base de datos.
-    db.session.commit()  # Confirma los cambios en la base de datos.
-
-    return jsonify({'message': 'Prediction updated'})  # Responde con un mensaje indicando que la predicción fue actualizada.
+    prediction.predicted_class = model.predict(features)[0]
+    db.session.commit()
+    return jsonify({'message': 'Prediction updated'})
 
 # Ruta para actualizar parcialmente una predicción existente (PATCH).
 @app.route('/prediction/<int:id>', methods=['PATCH'])
 def patch_prediction(id):
-    # Esta ruta permite actualizar parcialmente una predicción existente.
-    data = request.json  # Obtiene los datos JSON enviados en la solicitud.
-    
-    # Busca la predicción en la base de datos usando el ID proporcionado en la URL.
+    data = request.json
+    if not data:
+        return jsonify({'error': 'No fields provided for update'}), 400
+    valid_fields = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+    for key, value in data.items():
+        if key in valid_fields:
+            if not isinstance(value, (int, float)):
+                return jsonify({'error': f'Invalid type for {key}: must be a number'}), 400
     prediction = Prediction.query.get(id)
-    
     if not prediction:
-        # Si no se encuentra la predicción, devuelve un mensaje de error.
         return jsonify({'message': 'Prediction not found'}), 404
-
-    # Solo actualiza los campos que están presentes en los datos enviados.
     if 'sepal_length' in data:
         prediction.sepal_length = data['sepal_length']
     if 'sepal_width' in data:
@@ -127,20 +135,15 @@ def patch_prediction(id):
         prediction.petal_length = data['petal_length']
     if 'petal_width' in data:
         prediction.petal_width = data['petal_width']
-
-    # Realiza la predicción nuevamente con las características actualizadas.
     features = [[
         prediction.sepal_length,
         prediction.sepal_width,
         prediction.petal_length,
         prediction.petal_width
     ]]
-    prediction.predicted_class = model.predict(features)[0]  # Actualiza la clase predicha.
-
-    # Guarda los cambios en la base de datos.
+    prediction.predicted_class = model.predict(features)[0]
     db.session.commit()
-
-    return jsonify({'message': 'Prediction partially updated'})  # Responde con un mensaje indicando que la predicción fue parcialmente actualizada.
+    return jsonify({'message': 'Prediction partially updated'})
 
 # Ruta para obtener las métricas del modelo (GET).
 @app.route('/metrics', methods=['GET'])
