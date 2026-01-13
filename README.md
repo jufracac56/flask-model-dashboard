@@ -224,7 +224,7 @@ Si se solicita un límite mayor a 100, el sistema lo ajusta automáticamente a 1
 
 ## 🏗️ Estructura del Proyecto
 
-```
+```bash
 flask-model-dashboard/
 │
 ├── app.py                  # Aplicación Flask principal
