@@ -96,7 +96,12 @@ El dashboard incluye:
 
 ### API Endpoints
 
-La aplicación proporciona una API RESTful completa:
+
+La aplicación proporciona una API RESTful completa. Ahora incluye mejoras de seguridad y validación:
+
+- Validación de campos obligatorios y tipos de datos en todos los endpoints de predicción.
+- Respuestas de error claras y códigos HTTP apropiados (400, 404).
+- Límite configurable en la consulta de predicciones.
 
 #### 1. Realizar nueva predicción
 ```bash
@@ -113,7 +118,29 @@ Content-Type: application/json
 
 #### 2. Obtener todas las predicciones
 ```bash
-GET /predictions
+GET /predictions?limit=20
+```
+
+**Parámetro opcional:**
+- `limit` (entero, por defecto 10, máximo 100): Número máximo de predicciones a devolver.
+
+**Ejemplo de respuesta:**
+```json
+{
+    "count": 2,
+    "limit": 20,
+    "data": [
+        {
+            "id": 1,
+            "sepal_length": 5.1,
+            "sepal_width": 3.5,
+            "petal_length": 1.4,
+            "petal_width": 0.2,
+            "predicted_class": "Iris-setosa"
+        },
+        ...
+    ]
+}
 ```
 
 #### 3. Actualizar predicción completa
@@ -157,6 +184,42 @@ curl http://127.0.0.1:5000/predictions
 
 # Obtener métricas
 curl http://127.0.0.1:5000/metrics
+```
+
+### Códigos de error posibles y ejemplos de respuesta
+
+#### Errores comunes en los endpoints de predicción
+
+**Campos obligatorios faltantes:**
+```json
+{
+    "error": "Missing field: sepal_length"
+}
+```
+
+**Tipo de dato incorrecto:**
+```json
+{
+    "error": "All fields must be numeric"
+}
+```
+
+**Predicción no encontrada (PUT/PATCH):**
+```json
+{
+    "message": "Prediction not found"
+}
+```
+
+**No se enviaron campos para actualizar (PATCH):**
+```json
+{
+    "error": "No fields provided for update"
+}
+```
+
+**Límite excedido en /predictions:**
+Si se solicita un límite mayor a 100, el sistema lo ajusta automáticamente a 100.
 ```
 
 ## 🏗️ Estructura del Proyecto
