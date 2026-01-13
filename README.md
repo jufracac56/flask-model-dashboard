@@ -1,284 +1,240 @@
-El modelo a generar deberá contar con la estructura: 
+# 🤖 ML Model Dashboard - Iris Classification
 
-flask_model_dashboard/
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-2.3%2B-green.svg)](https://flask.palletsprojects.com/)
+[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.2.1-orange.svg)](https://scikit-learn.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-│
+Una aplicación web completa para entrenar, evaluar y visualizar modelos de Machine Learning usando el clásico dataset Iris. El proyecto incluye un dashboard interactivo con múltiples visualizaciones de métricas y una API RESTful para realizar predicciones.
 
-├── app.py                 # El archivo principal de la aplicación Flask.
+## 📋 Características
 
-├── model.pkl              # El modelo entrenado que se carga en Flask.
+- 🤖 **Entrenamiento automatizado** de modelo de regresión logística
+- 📊 **Dashboard interactivo** con visualizaciones en tiempo real
+- 🔄 **API RESTful** completa para operaciones CRUD
+- 📈 **Múltiples métricas** de evaluación (Accuracy, Precision, Recall, F1-Score)
+- 🎯 **Matriz de confusión** visual e interactiva
+- 📱 **Diseño responsivo** y moderno
+- 💾 **Almacenamiento persistente** con SQLite
+- ⚡ **Actualización automática** de métricas cada 10 segundos
 
-├── metrics.json           # El archivo donde se guardan las métricas del modelo.
+## 🎯 Demo
 
-├── templates/
+![Dashboard Preview](./static/dashboard-preview.png)
 
-│   ├── dashboard.html     # El archivo HTML para mostrar el dashboard con Chart.js.
+**Funcionalidades del Dashboard:**
+- Gráficos tipo radar y barras para métricas generales
+- Medidores (gauges) individuales para cada métrica
+- Matriz de confusión interactiva
+- Tarjetas de rendimiento por clase de Iris
+- Clasificación por colores según rendimiento
 
-├── requirements.txt       # Dependencias necesarias para ejecutar el proyecto.
+## 🚀 Instalación y Configuración
 
-└── README.md              # Instrucciones y descripción del proyecto.
+### Prerrequisitos
 
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
 
+### 1. Clonar el repositorio
 
-Nota: Al final de las instrucciones encontrará los archivos necesarios para la actividad.
+```bash
+git clone https://github.com/usuario/flask-model-dashboard.git
+cd flask-model-dashboard
+```
 
+### 2. Crear entorno virtual
 
-
-Cree el directorio proyectoDashboard en la instancia de cloud9
-
-Ingrese al directorio proyectoDashboard
-
-Suba los archivos api.py, iris.csv, model.py, requirements.txt
-
-Cree el directorio templates
-
-Dentro del directorio templates suba el archivo dashboard.html 
-
-
-
-Cree el ambiente virtual: 
-
+```bash
+# Windows
 python -m venv dashboard
+dashboard\Scripts\activate
 
-Active el entorno:
-
+# Linux/macOS
+python -m venv dashboard
 source dashboard/bin/activate
+```
 
+### 3. Instalar dependencias
 
-
-Dentro del entorno virtual instale los requerimientos:
-
+```bash
 pip install -r requirements.txt
 
-
-
-Después de instalar requirements.txt, es necesario actualizar:
-
+# Si es necesario, actualizar Flask-SQLAlchemy
 pip install --upgrade Flask-SQLAlchemy
+```
 
+### 4. Entrenar el modelo
 
-
-Ejecute el entrenamiento del modelo con:
-
+```bash
 python model.py
+```
 
+Este comando generará:
+- `model.pkl`: Modelo entrenado serializado
+- `metrics.json`: Métricas de evaluación del modelo
 
+### 5. Ejecutar la aplicación
 
-Ejecute la instancia para comunicación del modelo a través de Flask:
-
+```bash
 python app.py
+```
 
+La aplicación estará disponible en: `http://127.0.0.1:5000`
 
+## 📖 Uso de la Aplicación
 
-En una terminal escriba lo indicado para cada método
+### Dashboard Web
 
-1. Método POST: Hacer una nueva predicción
+Accede al dashboard completo en: `http://127.0.0.1:5000/dashboard`
 
-curl -X POST http://127.0.0.1:5000/predict -H "Content-Type: application/json" -d '{
+El dashboard incluye:
+- **Vista general**: Gráfico radar con todas las métricas
+- **Métricas detalladas**: Medidores individuales para cada métrica
+- **Matriz de confusión**: Visualización interactiva de clasificaciones
+- **Rendimiento por clase**: Tarjetas detalladas para Setosa, Versicolor y Virginica
 
+### API Endpoints
+
+La aplicación proporciona una API RESTful completa:
+
+#### 1. Realizar nueva predicción
+```bash
+POST /predict
+Content-Type: application/json
+
+{
     "sepal_length": 5.1,
-
     "sepal_width": 3.5,
-
     "petal_length": 1.4,
-
     "petal_width": 0.2
+}
+```
 
-}'
+#### 2. Obtener todas las predicciones
+```bash
+GET /predictions
+```
 
+#### 3. Actualizar predicción completa
+```bash
+PUT /prediction/{id}
+Content-Type: application/json
 
+{
+    "sepal_length": 5.7,
+    "sepal_width": 3.2,
+    "petal_length": 1.5,
+    "petal_width": 0.3
+}
+```
 
-2. Método GET: Obtener todas las predicciones
+#### 4. Actualización parcial
+```bash
+PATCH /prediction/{id}
+Content-Type: application/json
 
+{
+    "sepal_length": 5.8
+}
+```
+
+#### 5. Obtener métricas del modelo
+```bash
+GET /metrics
+```
+
+### Ejemplos con CURL
+
+```bash
+# Nueva predicción
+curl -X POST http://127.0.0.1:5000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
+
+# Ver todas las predicciones
 curl http://127.0.0.1:5000/predictions
 
-
-
-3. Método PUT: Actualizar una predicción existente
-
-curl -X PUT http://127.0.0.1:5000/prediction/1 -H "Content-Type: application/json" -d '{
-
-    "sepal_length": 5.7,
-
-    "sepal_width": 3.2,
-
-    "petal_length": 1.5,
-
-    "petal_width": 0.3
-
-}'
-
-
-
-4. Método PATCH: Actualizar parcialmente una predicción
-
-curl -X PATCH http://127.0.0.1:5000/prediction/1 -H "Content-Type: application/json" -d '{
-
-    "sepal_length": 5.8
-
-}'
-
-
-
-5.- Consulta de métricas: accuracy, confusion_matrix, f1_score, precision y recall 
-
+# Obtener métricas
 curl http://127.0.0.1:5000/metrics
-
-
-
-Instale Postman, lo puede descargar en: https://www.postman.com/downloads/
-
-
-
-Configurar la EC2 que corresponde a su servicios de CLOUD9 (Su ya tiene salida a internet, no es necesaria la configuración)
-
-Ahora debe ingresar a EC2.
-
-Dé clic en el id de su instancia
-
-Dé clic en la pestaña inferior "Seguridad"
-
-Dé clic en "Grupos de seguridad"
-
-Dé clic en "Id del grupo de seguridad"
-
-Dé clic en "Editar reglas de entrada"
-
-Dé clci en "Agregar regla"
-
-Tipo: TCP Personalizado
-
-Protocolo: TCP
-
-Intervalo de puertos: 5000
-
-Origen: Personalizada
-
-Blokes de CIDR: 0.0.0.0/0
-
-Descripción: Acceso Flask
-
-
-
-Copie su dirección ip pública, la utilizará en adelante:
-
-
-
-Ahora debe ejecutar
-
-1. Método POST: Hacer una nueva predicción
-
-Abrir Postman.
-
-
-
-Selecciona el método POST en el menú desplegable.
-
-Ingresa la URL: http://escribasuippublica:5000/predict.
-
-Ve a la pestaña Headers:
-
-Agrega una clave: Content-Type con el valor application/json.
-
-Ve a la pestaña Body:
-
-Selecciona raw y escribe el cuerpo en formato JSON:
-
-json
-
-{
-
-    "sepal_length": 5.1,
-
-    "sepal_width": 3.5,
-
-    "petal_length": 1.4,
-
-    "petal_width": 0.2
-
-}
-
-Haga clic en Send.
-
-Si todo está correcto, deberías recibir una respuesta con el detalle de la predicción.
-
-
-
-2. Método GET: Obtener todas las predicciones
-
-Selecciona el método GET en el menú desplegable.
-
-Ingresa la URL: http://54.90.64.177:5000/predictions.
-
-Haz clic en Send.
-
-
-
-Debería recibir un JSON con la lista de todas las predicciones realizadas.
-
-
-
-3. Método PUT: Actualizar una predicción existente
-
-Selecciona el método PUT.
-
-
-
-Ingrese la URL: http://54.90.64.177:5000/prediction/1 (reemplaza 1 con el ID de la predicción que deseas actualizar).
-
-
-
-Vaya a la pestaña Headers:
-
-Agregue Content-Type con el valor application/json.
-
-Ve a la pestaña Body:
-
-Selecciona raw y escribe el cuerpo en JSON:
-
-{
-
-    "sepal_length": 5.7,
-
-    "sepal_width": 3.2,
-
-    "petal_length": 1.5,
-
-    "petal_width": 0.3
-
-}
-
-Haga clic en Send.
-
-
-
-Debería recibir la predicción actualizada.
-
-
-
-5. Consulta de métricas
-
-Selecciona el método GET.
-
-Ingrese la URL: http://54.90.64.177:5000/metrics.
-
-Haga clic en Send.
-
-Debería recibir un JSON con las métricas, como accuracy, confusion_matrix, f1_score, etc.
-
-
-
-Genere un reporte con imágenes de los pasos descritos anteriormente.
-
-
-
-Consulte el dashboard con las métricas:
-
-Para ello abra un navegador:
-
-http://suippublica:5000/dashboard
-
-
-
-Por último modifique el dashboard para cambiar el tipo de gráfico o incluir una métrica adicional, genere un vídeo adicional en el que se evidencie cada paso y súbalo a la plataforma (En caso de ser necesario puede compartir el enlace al vídeo).
-
+```
+
+## 🏗️ Estructura del Proyecto
+
+```
+flask-model-dashboard/
+│
+├── app.py                  # Aplicación Flask principal
+├── model.py               # Entrenamiento y evaluación del modelo
+├── iris.csv               # Dataset Iris
+├── requirements.txt       # Dependencias Python
+├── model.pkl              # Modelo entrenado (generado)
+├── metrics.json           # Métricas del modelo (generado)
+├── predictions.db         # Base de datos SQLite (generado)
+│
+├── templates/
+│   └── dashboard.html     # Template HTML del dashboard
+│
+├── static/
+│   ├── css/
+│   │   └── styles.css     # Estilos CSS personalizados
+│   └── js/
+│   │   └── main.js        # JavaScript para gráficos interactivos
+│   └── dashboard-preview.png
+└── README.md              # Documentación del proyecto
+```
+
+## 🔧 Tecnologías Utilizadas
+
+### Backend
+- **Flask**: Framework web de Python
+- **Flask-SQLAlchemy**: ORM para base de datos
+- **Scikit-learn**: Biblioteca de Machine Learning
+- **Pandas**: Manipulación de datos
+- **Pickle**: Serialización del modelo
+
+### Frontend
+- **Chart.js**: Biblioteca para gráficos interactivos
+- **HTML5/CSS3**: Estructura y estilos
+- **JavaScript ES6**: Interactividad del cliente
+
+### Base de Datos
+- **SQLite**: Base de datos embebida para predicciones
+
+## 📊 Métricas del Modelo
+
+El modelo de regresión logística alcanza las siguientes métricas en el dataset de prueba:
+
+| Métrica   | Valor  |
+|-----------|--------|
+| Accuracy  | 90.0%  |
+| Precision | 92.1%  |
+| Recall    | 90.0%  |
+| F1-Score  | 89.6%  |
+
+### Rendimiento por Clase
+
+| Clase        | Precision | Recall | F1-Score | Support |
+|--------------|-----------|--------|----------|---------|
+| Setosa       | 100.0%    | 100.0% | 100.0%   | 10      |
+| Versicolor   | 100.0%    | 66.7%  | 80.0%    | 9       |
+| Virginica    | 78.6%     | 100.0% | 88.0%    | 11      |
+
+
+## 🧪 Testing
+
+### Probar la API con Postman
+
+1. Importa la colección de endpoints
+2. Configura la URL base: `http://tu-servidor:5000`
+3. Ejecuta los tests de cada endpoint
+
+### Validación del Modelo
+
+```bash
+# Re-entrenar y validar el modelo
+python model.py
+
+# Verificar métricas generadas
+cat metrics.json
+```
